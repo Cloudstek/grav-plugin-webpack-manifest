@@ -59,6 +59,6 @@ class WebpackManifestPlugin extends Plugin
      */
     public function onTwigExtensions()
     {
-        $this->grav['twig']->addExtension(new WebpackManifestTwigExtension());
+        $this->grav['twig']->twig->addExtension(new WebpackManifestTwigExtension());
     }
 }
