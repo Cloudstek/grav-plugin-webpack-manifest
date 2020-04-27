@@ -1,0 +1,5 @@
+# Enable/disable the plugin
+enabled: true
+# Path to manifest.json relative to your active theme
+# For webpack use manifest.json. For Laravel Mix use mix-manifest.json.
+filepath: manifest.json

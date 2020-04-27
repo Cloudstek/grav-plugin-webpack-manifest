@@ -1,0 +1,4 @@
+en:
+  PLUGIN_WEBPACK_MANIFEST:
+    FILEPATH: File path
+    FILEPATH_HELP: Path to the webpack manifest file relative to the theme directory. Usually this is named manifest.json or mix-manifest.json when using Laravel Mix.

@@ -1,0 +1,28 @@
+{
+  "name": "cloudstek/grav-plugin-webpack-manifest",
+  "type": "grav-plugin",
+  "description": "Grav plugin to use assets from a webpack manifest file.",
+  "keywords": ["plugin"],
+  "homepage": "https://github.com/Cloudstek/grav-plugin-webpack-manifest",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Maarten de Boer",
+      "email": "maarten@cloudstek.nl"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\WebpackManifest\\": "classes/"
+    },
+    "classmap":  ["webpack-manifest.php"]
+  },
+  "config": {
+    "platform": {
+      "php": "7.1.3"
+    }
+  }
+}

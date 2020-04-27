@@ -1,0 +1,34 @@
+name: Webpack Manifest
+version: 1.0.0
+description: Reference assets from your webpack manifest in your theme
+icon: plug
+author:
+  name: Maarten de Boer
+  email: maarten@cloudstek.nl
+homepage: https://github.com/Cloudstek/grav-plugin-webpack-manifest
+keywords: webpack, mix, encore, manifest
+bugs: https://github.com/Cloudstek/grav-plugin-webpack-manifest/issues
+docs: https://github.com/Cloudstek/grav-plugin-webpack-manifest/blob/master/README.md
+license: MIT
+
+dependencies:
+  - { name: grav, version: '>=1.6.0' }
+
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      highlight: 1
+      default: 0
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+    filepath:
+      type: text
+      default: manifest.json
+      label: PLUGIN_WEBPACK_MANIFEST.FILEPATH
+      help: PLUGIN_WEBPACK_MANIFEST.FILEPATH_HELP
