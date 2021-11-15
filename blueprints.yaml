@@ -1,14 +1,14 @@
 name: Webpack Manifest
-version: 1.0.0
+version: 1.0.2
 description: Reference assets from your webpack manifest in your theme
 icon: plug
 author:
   name: Maarten de Boer
   email: maarten@cloudstek.nl
-homepage: https://github.com/Cloudstek/grav-plugin-webpack-manifest
+homepage: https://github.com/icyavocado/grav-plugin-webpack-manifest
 keywords: webpack, mix, encore, manifest
-bugs: https://github.com/Cloudstek/grav-plugin-webpack-manifest/issues
-docs: https://github.com/Cloudstek/grav-plugin-webpack-manifest/blob/master/README.md
+bugs: https://github.com/icyavocado/grav-plugin-webpack-manifest/issues
+docs: https://github.com/icyavocado/grav-plugin-webpack-manifest/blob/master/README.md
 license: MIT
 
 dependencies:
