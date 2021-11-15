@@ -58,10 +58,15 @@ class WebpackManifestAssets
 
         $manifestPath = $this->locator->findResource($manifestPath);
 
+        // Setup build folder
+        if ($manifestPath !== false) {
+            list($buildFolder) = preg_split("/\/(?!.*\/)/", $this->config['filepath']);
+            $this->buildFolder = 'theme://' . $buildFolder;
+        }
+
         // Load manifest
         if ($manifestPath !== false) {
             $this->manifest = json_decode(file_get_contents($manifestPath), true);
-
             if ($this->manifest === null) {
                 throw new \Exception(
                     sprintf(
@@ -149,11 +154,14 @@ class WebpackManifestAssets
         }
 
         // Handle single asset.
-        $assetPath = $this->locator->findResource($asset, false);
+        $isRequested = $this->locator->isStream($asset);
 
-        // Replace the original file path with the located file path from our manifest
-        if ($assetPath !== false && isset($this->manifest[$assetPath])) {
-            $args[0] = $this->manifest[$assetPath];
+        // Get the name of the asset requested
+        $assetName = substr(strrchr($asset, '/'), 1);
+
+        // Replace non-hash path with manifest path
+        if ($isRequested && isset($this->manifest[$assetName])) {
+          $args[0] = $this->buildFolder . $this->manifest[$assetName];
         }
 
         call_user_func_array([$this->assets, 'addCss'], $args);
@@ -188,13 +196,16 @@ class WebpackManifestAssets
         if ($handledMultiple === true) {
             return $this;
         }
-
+        
         // Handle single asset.
-        $assetPath = $this->locator->findResource($asset, false);
+        $isRequested = $this->locator->isStream($asset);
 
-        // Replace the original file path with the located file path from our manifest
-        if ($assetPath !== false && isset($this->manifest[$assetPath])) {
-            $args[0] = $this->manifest[$assetPath];
+        // Get the name of the asset requested
+        $assetName = substr(strrchr($asset, '/'), 1);
+
+        // Replace non-hash path with manifest path
+        if ($isRequested && isset($this->manifest[$assetName])) {
+          $args[0] = $this->buildFolder . $this->manifest[$assetName];
         }
 
         call_user_func_array([$this->assets, 'addJs'], $args);
