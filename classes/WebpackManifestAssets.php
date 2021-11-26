@@ -159,10 +159,19 @@ class WebpackManifestAssets
         // Get the name of the asset requested
         $assetName = substr(strrchr($asset, '/'), 1);
 
+        // Switch to the js version for HRM development
+        if (!isset($this->manifest[$assetName])) {
+            $assetName = str_replace("css", "js", $assetName);
+            $isDevelopment = true;
+        }
+
         // Replace non-hash path with manifest path
         if ($isRequested && isset($this->manifest[$assetName])) {
           $args[0] = $this->buildFolder . $this->manifest[$assetName];
         }
+
+        // Use js version for HRM development
+        if (isset($isDevelopment) && $isDevelopment) call_user_func_array([$this->assets, 'addJs'], $args);
 
         call_user_func_array([$this->assets, 'addCss'], $args);
 
