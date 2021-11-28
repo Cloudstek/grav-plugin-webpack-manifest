@@ -17,6 +17,13 @@ class WebpackManifestAssets
     /**
      * Assets.
      *
+     * @var Boolean
+     */
+    private $isDevelopment;
+
+    /**
+     * Assets.
+     *
      * @var Assets
      */
     private $assets;
@@ -53,16 +60,31 @@ class WebpackManifestAssets
         $manifestPath = 'theme://manifest.json';
 
         if (empty($this->config['filepath']) === false) {
-            $manifestPath = 'theme://' . $this->config['filepath'];
+            $manifestPathConfigPath = $this->config['filepath'];
+            // Get host, port and protocol from config file
+            $host = $this->config['devServer']['host'];
+            $port = $this->config['devServer']['port'];
+            $server = $this->config['devServer']['server'];
+            // Build url to manifest file
+            $url = "$server://$host:$port/$manifestPathConfigPath";
+            try {
+                // detect if development mode is on
+                if (file_get_contents($url)) {
+                    $manifestPath = $url;
+                    $this->isDevelopment = true;
+                }
+            } catch (\Throwable $th) {
+                $manifestPath = 'theme://' . $manifestPathConfigPath;
+            }
+
+            // Setup build folder
+            list($buildFolder) = preg_split("/\/(?!.*\/)/", $manifestPathConfigPath);
+            $this->buildFolder = $this->isDevelopment !== true ? 'theme://' . $buildFolder : $buildFolder;
+  
         }
 
-        $manifestPath = $this->locator->findResource($manifestPath);
-
-        // Setup build folder
-        if ($manifestPath !== false) {
-            list($buildFolder) = preg_split("/\/(?!.*\/)/", $this->config['filepath']);
-            $this->buildFolder = 'theme://' . $buildFolder;
-        }
+        // Ignore this check if we are in development mode
+        if ($this->isDevelopment !== true) $manifestPath = $this->locator->findResource($manifestPath);
 
         // Load manifest
         if ($manifestPath !== false) {
@@ -125,6 +147,33 @@ class WebpackManifestAssets
         return $this;
     }
 
+     /**
+     * Modify path for a CSS or JS asset based on development or production.
+     *
+     * @param array|string $asset
+     *
+     * @return string $assetName
+     */
+    public function handleAssetPath($asset)
+    {
+         // Check if requested assets is public assets or not
+         $isPublicAssets = strpos($asset, "assets");
+
+         // Get the name of the asset requested
+         if (isset($this->isDevelopment) && $this->isDevelopment && $isPublicAssets !== false) {
+             $assetName = substr($asset, $isPublicAssets);
+         } else {
+             $assetName = substr(strrchr($asset, '/'), 1);
+         }
+ 
+         // Switch to the js version for HRM development
+         if (isset($this->isDevelopment) && $this->isDevelopment && !isset($this->manifest[$assetName])) {
+             $assetName = str_replace("css", "js", $assetName);
+         }
+
+         return $assetName;
+    }
+
     /**
      * Add a CSS asset or a collection of assets.
      *
@@ -156,22 +205,16 @@ class WebpackManifestAssets
         // Handle single asset.
         $isRequested = $this->locator->isStream($asset);
 
-        // Get the name of the asset requested
-        $assetName = substr(strrchr($asset, '/'), 1);
-
-        // Switch to the js version for HRM development
-        if (!isset($this->manifest[$assetName])) {
-            $assetName = str_replace("css", "js", $assetName);
-            $isDevelopment = true;
-        }
+        // Get the correspond asset based on production or development build
+        $assetName = $this->handleAssetPath($asset);
 
         // Replace non-hash path with manifest path
         if ($isRequested && isset($this->manifest[$assetName])) {
-          $args[0] = $this->buildFolder . $this->manifest[$assetName];
+            $args[0] = $this->buildFolder . $this->manifest[$assetName];
         }
 
         // Use js version for HRM development
-        if (isset($isDevelopment) && $isDevelopment) call_user_func_array([$this->assets, 'addJs'], $args);
+        if (isset($this->isDevelopment) && $this->isDevelopment) call_user_func_array([$this->assets, 'addJs'], $args);
 
         call_user_func_array([$this->assets, 'addCss'], $args);
 
@@ -205,16 +248,16 @@ class WebpackManifestAssets
         if ($handledMultiple === true) {
             return $this;
         }
-        
+
         // Handle single asset.
         $isRequested = $this->locator->isStream($asset);
 
-        // Get the name of the asset requested
-        $assetName = substr(strrchr($asset, '/'), 1);
+        // Get the correspond asset based on production or development build
+        $assetName = $this->handleAssetPath($asset);
 
         // Replace non-hash path with manifest path
         if ($isRequested && isset($this->manifest[$assetName])) {
-          $args[0] = $this->buildFolder . $this->manifest[$assetName];
+            $args[0] = $this->buildFolder . $this->manifest[$assetName];
         }
 
         call_user_func_array([$this->assets, 'addJs'], $args);
