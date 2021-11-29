@@ -58,22 +58,35 @@ class WebpackManifestAssets
 
         // Determine manifest file path.
         $manifestPath = 'theme://manifest.json';
-
         if (empty($this->config['filepath']) === false) {
             $manifestPathConfigPath = $this->config['filepath'];
-            // Get host, port and protocol from config file
-            $host = $this->config['devServer']['host'];
-            $port = $this->config['devServer']['port'];
-            $server = $this->config['devServer']['server'];
-            // Build url to manifest file
-            $url = "$server://$host:$port/$manifestPathConfigPath";
-            try {
-                // detect if development mode is on
-                if (file_get_contents($url)) {
-                    $manifestPath = $url;
-                    $this->isDevelopment = true;
+            if (
+                empty($this->config['devServer']['host']) === false &&
+                empty($this->config['devServer']['port']) === false &&
+                empty($this->config['devServer']['server']) === false
+            ) {
+                // Get host, port and protocol from config file
+                $host = $this->config['devServer']['host'];
+                $port = $this->config['devServer']['port'];
+                $server = $this->config['devServer']['server'];
+                // Build url to manifest file
+                $url = "$server://$host:$port/$manifestPathConfigPath";
+                try {
+                    // detect if development mode is on
+                    if (file_get_contents($url)) {
+                        $manifestPath = $url;
+                        $this->isDevelopment = true;
+                    }
+                } catch (\Throwable $th) {
+                    throw new \Exception(
+                        sprintf(
+                            'Caught exception: ',
+                            $th->getMessage(),
+                            'json_last_error_msg()'
+                        )
+                    );
                 }
-            } catch (\Throwable $th) {
+            } else {
                 $manifestPath = 'theme://' . $manifestPathConfigPath;
             }
 
