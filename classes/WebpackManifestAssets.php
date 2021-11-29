@@ -56,44 +56,20 @@ class WebpackManifestAssets
         $this->locator = $grav['locator'];
         $this->config = $grav['config']['plugins.webpack-manifest'];
 
-        // Determine manifest file path.
+        // Default manifestPath
         $manifestPath = 'theme://manifest.json';
-        if (empty($this->config['filepath']) === false) {
-            $manifestPathConfigPath = $this->config['filepath'];
-            if (
-                empty($this->config['devServer']['host']) === false &&
-                empty($this->config['devServer']['port']) === false &&
-                empty($this->config['devServer']['server']) === false
-            ) {
-                // Get host, port and protocol from config file
-                $host = $this->config['devServer']['host'];
-                $port = $this->config['devServer']['port'];
-                $server = $this->config['devServer']['server'];
-                // Build url to manifest file
-                $url = "$server://$host:$port/$manifestPathConfigPath";
-                try {
-                    // detect if development mode is on
-                    if (file_get_contents($url)) {
-                        $manifestPath = $url;
-                        $this->isDevelopment = true;
-                    }
-                } catch (\Throwable $th) {
-                    throw new \Exception(
-                        sprintf(
-                            'Caught exception: ',
-                            $th->getMessage(),
-                            'json_last_error_msg()'
-                        )
-                    );
-                }
-            } else {
-                $manifestPath = 'theme://' . $manifestPathConfigPath;
-            }
+        // Load path from config
+        $manifestPathConfigPath = $this->config['filepath'];
 
+        // Determine manifest file path.
+        if (empty($this->config['filepath']) === false) {
+            // Set is Development variable
+            $this->isDevelopment = $this->isWebpackDevServerRunning();
+            // Grab webpack manifest.json based on development status
+            $manifestPath = $this->isDevelopment ? $this->getWebpackDevServerURL() : 'theme://' . $manifestPathConfigPath;
             // Setup build folder
             list($buildFolder) = preg_split("/\/(?!.*\/)/", $manifestPathConfigPath);
             $this->buildFolder = $this->isDevelopment !== true ? 'theme://' . $buildFolder : $buildFolder;
-  
         }
 
         // Ignore this check if we are in development mode
@@ -112,6 +88,45 @@ class WebpackManifestAssets
                 );
             }
         }
+    }
+
+    /**
+     * Get webpack dev server url for manifest file
+     *
+     * @return null|string $url
+     */
+    public function getWebpackDevServerURL()
+    {
+        $manifestPathConfigPath = $this->config['filepath'];
+        // Check if these variable is set
+        if (
+            empty($this->config['devServer']['enabled']) === false &&
+            empty($this->config['devServer']['port']) === false &&
+            empty($this->config['devServer']['server']) === false
+        ) {
+            // Get host, port and protocol from config file
+            $host = $this->config['devServer']['host'];
+            $port = $this->config['devServer']['port'];
+            $server = $this->config['devServer']['server'];
+            // Build url to manifest file
+            return "$server://$host:$port/$manifestPathConfigPath";
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Check manifest file to see if it is available via webpack dev server
+     *
+     * @return Boolean true | false
+     */
+    public function isWebpackDevServerRunning()
+    {
+        $url = $this->getWebpackDevServerURL();
+        if (!$url) return false;
+        $headers = @get_headers($url, 1);
+        // detect if development mode is on
+        return $headers && strpos($headers[0], "200");
     }
 
     /**
