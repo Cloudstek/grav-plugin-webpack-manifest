@@ -2,3 +2,11 @@ en:
   PLUGIN_WEBPACK_MANIFEST:
     FILEPATH: File path
     FILEPATH_HELP: Path to the webpack manifest file relative to the theme directory. Usually this is named manifest.json or mix-manifest.json when using Laravel Mix.
+    DEV_SERVER: devServer
+    DEV_SERVER_HELP: Dev server info to setup path to fetch data from webpack-dev-server (all required *)
+    DEV_SERVER_HOST: Host
+    DEV_SERVER_HOST_HELP: IP of the host running webpack-dev-server, Webpack devServer.host needs to be "0.0.0.0"
+    DEV_SERVER_PORT: Port
+    DEV_SERVER_PORT_HELP: devServer.port, example 3001
+    DEV_SERVER_SERVER: Server
+    DEV_SERVER_SERVER_HELP: devServer.server, only tested on http
