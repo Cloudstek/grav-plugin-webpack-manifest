@@ -32,3 +32,23 @@ form:
       default: manifest.json
       label: PLUGIN_WEBPACK_MANIFEST.FILEPATH
       help: PLUGIN_WEBPACK_MANIFEST.FILEPATH_HELP
+    devServer:
+      type: section
+      title: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER
+      help: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_HELP
+      fields:
+        devServer.host:
+          type: text
+          label: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_HOST
+          help: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_HOST_HELP
+          default: ''
+        devServer.port:
+          type: text
+          label: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_PORT
+          help: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_PORT_HELP
+          default: ''
+        devServer.server:
+          type: text
+          label: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_SERVER
+          help: PLUGIN_WEBPACK_MANIFEST.DEV_SERVER_SERVER_HELP
+          default: ''

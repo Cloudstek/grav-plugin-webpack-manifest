@@ -3,3 +3,12 @@ enabled: true
 # Path to manifest.json relative to your active theme
 # For webpack use manifest.json. For Laravel Mix use mix-manifest.json.
 filepath: manifest.json
+# Dev server info to setup path to fetch data from webpack-dev-server
+devServer:
+  # IP of the host running webpack-dev-server,
+  # Webpack devServer.host needs to be "0.0.0.0"
+  host: 192.168.1.27
+  # devServer.port
+  port: 3001
+  # devServer.server, only tested on http
+  server: http
